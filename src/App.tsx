@@ -34,7 +34,6 @@ import { QuickAddMenu } from './QuickAddMenu';
 import { TabBar } from './TabBar';
 import { DEFAULT_DATA } from './shapes';
 import { layoutElements, type Direction } from './layout';
-import logo from './assets/logo-2.png';
 
 const nodeTypes = {
   company: CompanyNode,
@@ -91,6 +90,17 @@ type QuickAdd = { sourceNodeId: string; sourceHandleId: string | null; screenX: 
 type Board = { id: string; name: string; nodes: Node[]; edges: Edge[] };
 
 const initialBoards: Board[] = [{ id: 'board-1', name: 'New Business', nodes: initialNodes, edges: initialEdges }];
+
+// True when this app is loaded inside someone else's page (e.g. the HubSpot
+// card's iframe modal) rather than visited directly — in that context this is
+// a read-only view, so the editing chrome (the shape palette) has no purpose.
+const isEmbedded = (() => {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true; // cross-origin access to window.top was blocked — definitely embedded
+  }
+})();
 
 function FlowCanvas() {
   const [boards, setBoards] = useState<Board[]>(initialBoards);
@@ -252,9 +262,6 @@ function FlowCanvas() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh' }}>
-      <header className="app-header">
-        <img src={logo} alt="Company logo" className="app-header__logo" />
-      </header>
       <TabBar
         boards={boards}
         activeId={activeBoardId}
@@ -264,7 +271,7 @@ function FlowCanvas() {
         onDelete={deleteBoard}
       />
       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-        <Palette />
+        {!isEmbedded && <Palette />}
         <div className="canvas-wrap" ref={wrapperRef} onDrop={onDrop} onDragOver={onDragOver}>
           <div className="test-banner">
             Process Map — spike test · @xyflow/react

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -105,7 +105,7 @@ const isEmbedded = (() => {
 function FlowCanvas() {
   const [boards, setBoards] = useState<Board[]>(initialBoards);
   const [activeBoardId, setActiveBoardId] = useState(initialBoards[0].id);
-  const [direction, setDirection] = useState<Direction>('TB');
+  const [direction, setDirection] = useState<Direction>('LR');
   const [quickAdd, setQuickAdd] = useState<QuickAdd | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const connectingRef = useRef<{ nodeId: string; handleId: string | null } | null>(null);
@@ -259,6 +259,14 @@ function FlowCanvas() {
     },
     [nodes, edges, fitView, setNodes, setEdges],
   );
+
+  // The starting board's node positions are hand-placed for a vertical read;
+  // run the real auto-layout once on load so "horizontal by default" is an
+  // actual layout, not just the toggle button looking pre-selected.
+  useEffect(() => {
+    applyLayout('LR');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh' }}>

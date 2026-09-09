@@ -281,9 +281,6 @@ function FlowCanvas() {
       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
         {!isEmbedded && <Palette />}
         <div className="canvas-wrap" ref={wrapperRef} onDrop={onDrop} onDragOver={onDragOver}>
-          <div className="test-banner">
-            Process Map — spike test · @xyflow/react
-          </div>
           <ReactFlow
             nodes={nodes}
             edges={edges}

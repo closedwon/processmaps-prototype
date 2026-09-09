@@ -1,0 +1,37 @@
+import { Handle, Position } from '@xyflow/react';
+import { EditableText } from '../EditableText';
+import { ShapeToolbar } from '../ShapeToolbar';
+import { useShapeUpdate } from '../useShapeControls';
+
+export type CompanyNodeData = {
+  name: string;
+  domain: string;
+  industry: string;
+  accentColor?: string;
+};
+
+export function CompanyNode({ id, data, selected }: { id: string; data: CompanyNodeData; selected?: boolean }) {
+  const update = useShapeUpdate(id);
+  const color = data.accentColor ?? '#1B3A63';
+  const tint = `color-mix(in srgb, ${color} 16%, white)`;
+
+  return (
+    <div className="hs-node company-node">
+      <ShapeToolbar selected={!!selected} color={color} onColor={(c) => update({ accentColor: c })} />
+      <Handle type="target" position={Position.Top} id="top" />
+      <Handle type="target" position={Position.Left} id="left" />
+      <div className="hs-node__icon" style={{ background: tint, color }}>C</div>
+      <div className="hs-node__body">
+        <div className="hs-node__title">
+          <EditableText value={data.name} onChange={(v) => update({ name: v })} />
+        </div>
+        <div className="hs-node__row">
+          <span className="hs-node__meta">{data.domain}</span>
+          <span className="chip" style={{ background: tint, color }}>{data.industry}</span>
+        </div>
+      </div>
+      <Handle type="source" position={Position.Bottom} id="bottom" />
+      <Handle type="source" position={Position.Right} id="right" />
+    </div>
+  );
+}
